@@ -1,15 +1,5 @@
 import * as React from "react";
-import {
-  AddIcon,
-  Pane,
-  Heading,
-  Text,
-  Paragraph,
-  Button,
-  Popover,
-  Tooltip,
-  Position,
-} from "evergreen-ui";
+import { Pane, Text } from "evergreen-ui";
 
 import { Icon } from "./Icon";
 import { Swatch } from "./Swatch";

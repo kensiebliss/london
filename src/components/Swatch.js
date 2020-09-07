@@ -91,7 +91,6 @@ const ColorPickerPane = (props) => {
         />
         <Icon
           iconName="TrashIcon"
-          cursor="pointer"
           title="delete"
           size={16}
           color="#66788A"
@@ -100,7 +99,6 @@ const ColorPickerPane = (props) => {
         <Icon
           onClick={props.duplicateColor}
           iconName="DuplicateIcon"
-          cursor="pointer"
           title="duplicate"
           size={16}
           color="#66788A"
@@ -108,7 +106,6 @@ const ColorPickerPane = (props) => {
         <Icon
           iconName="UndoIcon"
           disabled={!isDirty}
-          cursor="pointer"
           title="undo changes"
           size={16}
           marginRight={8}
@@ -125,13 +122,16 @@ export const CircleSwatch = (props) => {
   const Component = props.isEditable ? Popover : React.Fragment;
   const isColorDeleting = useBoolean(false);
   const isColorPickerPaneOpen = useBoolean(false);
-  const isDeleting = isColorDeleting.value
-  const isColorPickerOpen = isColorPickerPaneOpen.value
+  const isDeleting = isColorDeleting.value;
+  const isColorPickerOpen = isColorPickerPaneOpen.value;
 
   const toggleColorPickerPane = (bool) => {
-    if (typeof bool === 'boolean') isColorPickerPaneOpen.setValue(bool)
-    else isColorPickerOpen ? isColorPickerPaneOpen.setFalse() : isColorPickerPaneOpen.setTrue()
-  }
+    if (typeof bool === "boolean") isColorPickerPaneOpen.setValue(bool);
+    else
+      isColorPickerOpen
+        ? isColorPickerPaneOpen.setFalse()
+        : isColorPickerPaneOpen.setTrue();
+  };
 
   const deleteColor = () => {
     props.deleteColor({
@@ -141,13 +141,13 @@ export const CircleSwatch = (props) => {
   };
 
   const duplicateColor = () => {
-    toggleColorPickerPane(false)
+    toggleColorPickerPane(false);
 
     props.duplicateColor({
       category: props.category,
-      id: props.color.id
-    })
-  }
+      id: props.color.id,
+    });
+  };
 
   const stageDelete = () => {
     isColorDeleting.setTrue();
@@ -158,13 +158,11 @@ export const CircleSwatch = (props) => {
   }, [isDeleting]);
 
   const animatedStyles = {
-    transform: isDeleting ? 'scale(0)' : 'scale(1)',
-    transition: `transform ${isDeleting ? '400ms' : '100ms'} ease 0s`
-  }
+    transform: isDeleting ? "scale(0)" : "scale(1)",
+    transition: `transform ${isDeleting ? "400ms" : "100ms"} ease 0s`,
+  };
 
-  const isPaneShown = (
-    isDeleting ? false : isColorPickerOpen
-  )
+  const isPaneShown = isDeleting ? false : isColorPickerOpen;
 
   return (
     <>
@@ -189,14 +187,13 @@ export const CircleSwatch = (props) => {
           height="28px"
           marginRight="8px"
           marginBottom="8px"
-          transfor
           background={props.color.hex}
           borderRadius="50px"
           boxShadow="0px 1px 4px rgba(0,0,0,0.25)"
           {...animatedStyles}
         >
           <Pane
-          onClick={toggleColorPickerPane}
+            onClick={toggleColorPickerPane}
             className="innerCircleSwatch"
             background="#0000"
             height="100%"

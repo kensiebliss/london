@@ -11,7 +11,7 @@
   top: 0;
   left: 0;
   background: linear-gradient(#fffffff8, #fffffff8),
-    url('https://d2gg9evh47fn9z.cloudfront.net/800px_COLOURBOX33734809.jpg');
+    url("https://d2gg9evh47fn9z.cloudfront.net/800px_COLOURBOX33734809.jpg");
   background-size: 15%;
   background-repeat: repeat;
 }
@@ -36,10 +36,35 @@
 
 .sketch-picker {
   box-shadow: none !important;
-  font-family: 'SF UI Text' !important;
+  font-family: "SF UI Text" !important;
 }
 
 svg[disabled] {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+[data-icon] {
+  cursor: pointer;
+}
+
+[data-icon][disabled] {
+  cursor: not-allowed;
+}
+
+[data-isSelectedElement="true"] {
+  border: 2px solid #d87093 !important;
+}
+
+.Element {
+  outline: 2px dotted transparent;
+  transition: outline 0.5s ease-out;
+}
+
+.hoverFinder {
+  border: 2px dotted #f19034;
+}
+
+.Element:hover {
+  outline: 1px dotted palevioletred !important;
 }
