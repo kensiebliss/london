@@ -1,0 +1,43 @@
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+.App {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: linear-gradient(#fffffff8, #fffffff8),
+    url('https://d2gg9evh47fn9z.cloudfront.net/800px_COLOURBOX33734809.jpg');
+  background-size: 15%;
+  background-repeat: repeat;
+}
+
+.ColorSwatches {
+  padding: 16px 24px;
+}
+
+.ColorSwatches .swatchGrid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 12px 12px;
+}
+
+.CircleSwatch:hover {
+  transform: scale(1.2);
+}
+
+.innerCircleSwatch {
+}
+
+.sketch-picker {
+  box-shadow: none !important;
+}
+
+svg[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

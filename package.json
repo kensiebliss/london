@@ -1,0 +1,40 @@
+{
+  "name": "london",
+  "version": "0.0.0",
+  "description": "london bridge is gettin' down",
+  "main": "src/index.js",
+  "dependencies": {
+    "color-name-list": "^6.13.0",
+    "easy-peasy": "3.3.1",
+    "evergreen-ui": "5.0.6",
+    "get-value": "3.0.1",
+    "hex-alpha": "^1.0.2",
+    "kind-of": "6.0.3",
+    "nanoid": "3.1.12",
+    "nearest-color": "^0.4.4",
+    "react": "16.13.1",
+    "react-color": "2.18.1",
+    "react-contextmenu": "^2.14.0",
+    "react-dom": "16.13.1",
+    "react-hanger": "^2.2.1",
+    "react-loadable": "^5.5.0",
+    "react-scripts": "3.4.3",
+    "use-debounce": "^4.0.0",
+    "wretch": "1.7.2"
+  },
+  "devDependencies": {
+    "typescript": "3.8.3"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
+}
