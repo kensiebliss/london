@@ -20,7 +20,7 @@ export const state = {
 };
 
 const findById = (list, id) => {
-  return list
+  return list.find(item => item.id === id)
 }
 
 const deleteColor = action((state, { category, id }) => {
@@ -29,11 +29,19 @@ const deleteColor = action((state, { category, id }) => {
   });
 });
 
-const addColor = action((state, { category, title, hex }) => {
+const addColor = action((state, { category, title = 'new color', hex = '#1070CA' }) => {
   state.colors[category].push({
     id: nanoid(8),
     title,
     hex,
+  });
+});
+
+const duplicateColor = action((state, { category, id }) => {
+  const target = findById(state.colors[category], id)
+  state.colors[category].push({
+    ...target,
+    id: nanoid(8),
   });
 });
 
@@ -60,5 +68,6 @@ export const actions = {
   deleteColor,
   addColor,
   createColor,
-  editColor
+  editColor,
+  duplicateColor
 };

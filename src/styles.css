@@ -24,6 +24,7 @@
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   gap: 12px 12px;
+  padding: 0px 16px;
 }
 
 .CircleSwatch:hover {
@@ -35,6 +36,7 @@
 
 .sketch-picker {
   box-shadow: none !important;
+  font-family: 'SF UI Text' !important;
 }
 
 svg[disabled] {

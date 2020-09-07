@@ -13,7 +13,10 @@ export const ColorManager = (props) => {
   }))
 
   const actions = Store.useStoreActions((actions) => ({
-    editColor: actions.editColor
+    editColor: actions.editColor,
+    addColor: actions.addColor,
+    deleteColor: actions.deleteColor,
+    duplicateColor: actions.duplicateColor,
   }))
 
   return (
@@ -24,11 +27,11 @@ export const ColorManager = (props) => {
       buttonText="Color Manager"
     >
       <Pane background="#fff" paddingBottom="24px">
-        <ColorSwatches title="Brand Colors" category="brand" colors={store.colors.brand} editColor={actions.editColor} />
-        <ColorSwatches title="Neutral Colors" category="neutral" colors={store.colors.neutral} editColor={actions.editColor} />
-        <ColorSwatches title="Functional Colors" category="functional" colors={store.colors.functional} editColor={actions.editColor} />
-        <ColorSwatches title="Intentful Colors" category="intentful" colors={store.colors.intentful} editColor={actions.editColor} />
-        <ColorSwatches title="Other Colors" category="other" colors={store.colors.other} editColor={actions.editColor} />
+        <ColorSwatches title="Brand Colors" category="brand" colors={store.colors.brand} {...actions} />
+        <ColorSwatches title="Neutral Colors" category="neutral" colors={store.colors.neutral} {...actions} />
+        <ColorSwatches title="Functional Colors" category="functional" colors={store.colors.functional} {...actions} />
+        <ColorSwatches title="Intentful Colors" category="intentful" colors={store.colors.intentful} {...actions} />
+        <ColorSwatches title="Other Colors" category="other" colors={store.colors.other} {...actions} />
       </Pane>
     </SideMenu>
   )
