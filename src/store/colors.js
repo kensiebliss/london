@@ -1,8 +1,6 @@
-import kindOf from "kind-of";
 import { nanoid } from "nanoid";
-import { thunk, debug, action, createContextStore } from "easy-peasy";
+import { thunk, debug, action } from "easy-peasy";
 import { getColorInfo } from "../utilities/getColorInfo";
-import hexAlpha from 'hex-alpha'
 
 import {
   DEFAULT_BRAND_COLORS,
@@ -20,16 +18,20 @@ export const state = {
 };
 
 const findById = (list, id) => {
-  return list.find(item => item.id === id)
-}
+  return list.find((item) => item.id === id);
+};
 
-const deleteColor = action((state, { category, id }) => {
+const deleteColor = action((state, args) => {
+  const { category, id } = args;
+
   state.colors[category] = state.colors[category].filter((color) => {
     return color.id !== id;
   });
 });
 
-const addColor = action((state, { category, title = 'new color', hex = '#1070CA' }) => {
+const addColor = action((state, args) => {
+  const { category, title = "new color", hex = "#1070CA" } = args;
+
   state.colors[category].push({
     id: nanoid(8),
     title,
@@ -37,37 +39,41 @@ const addColor = action((state, { category, title = 'new color', hex = '#1070CA'
   });
 });
 
-const duplicateColor = action((state, { category, id }) => {
-  const target = findById(state.colors[category], id)
+const duplicateColor = action((state, args) => {
+  const { category, id } = args;
+  const target = findById(state.colors[category], id);
+
   state.colors[category].push({
     ...target,
     id: nanoid(8),
   });
 });
 
-const createColor = thunk(
-  async (actions, { value, category }, { getState }) => {
-    const info = await getColorInfo([value]);
+const createColor = thunk(async (actions, args) => {
+  const { value, category } = args;
+  const info = await getColorInfo([value]);
 
-    actions.addColor({
-      category,
-      ...info,
-    });
-  }
-);
+  actions.addColor({
+    category,
+    ...info,
+  });
+});
 
-const editColor = action((state, { category, ...color}) => {
+const editColor = action((state, args) => {
+  const { category, ...color } = args;
+
   for (const item of state.colors[category]) {
     if (item.id === color.id) {
-      Object.assign(item, color)
+      Object.assign(item, color);
+      break;
     }
   }
-})
+});
 
 export const actions = {
   deleteColor,
   addColor,
   createColor,
   editColor,
-  duplicateColor
+  duplicateColor,
 };
