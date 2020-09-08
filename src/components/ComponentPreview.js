@@ -14,27 +14,22 @@ import {
 import useHotkeys from "@reecelucas/react-use-hotkeys"
 
 const useComponentStore = () => {
-  const state = Store.useStoreState((state) => ({
-    component: state.component,
-    previewSettings: state.component.previewSettings,
-    selectedElement: state.component.selectedElement,
-    elements: state.component.elements,
-  }))
+  const state = Store.useStoreState((state) => state)
 
   const getChildren = (uid) => {
-    return state.elements.filter((element) => {
+    return state.component.elements.filter((element) => {
       return element.parentUid === uid
     })
   }
 
   const getElementById = (uid) => {
-    return state.elements.find((element) => {
+    return state.component.elements.find((element) => {
       return element.uid === uid
     })
   }
 
   const findElementParent = (uid) => {
-    return state.elements.find((element) => {
+    return state.component.elements.find((element) => {
       return element.children.find((child) => {
         return child.uid === uid
       })
@@ -44,8 +39,8 @@ const useComponentStore = () => {
   // turned out aite. less complex.
   const getElementPath = (currentUid) => {
     if (currentUid === "root") return []
-    const { tag, uid, parentUid } = getElementById(currentUid)
-    return [...getElementPath(parentUid), { tag, uid, parentUid }]
+    const element = getElementById(currentUid)
+    return [...getElementPath(element.parentUid), element]
   }
 
   const actions = Store.useStoreActions((actions) => ({
@@ -59,6 +54,7 @@ const useComponentStore = () => {
     setPreviewScale: actions.setPreviewScale,
     zoomIn: actions.zoomIn,
     zoomOut: actions.zoomOut,
+    setHoverIndicators: actions.setHoverIndicators,
 
     getChildren,
     getElementPath,
@@ -69,9 +65,7 @@ const useComponentStore = () => {
 
 export const ComponentPreview = (props) => {
   const { state, actions } = useComponentStore()
-  const [hoveredUid, setHoveredUid] = React.useState("")
-
-  console.log({ hoveredUid })
+  const isSelected = state.component.selectedUid === "root"
 
   useHotkeys("Delete", () => {
     actions.deleteElement()
@@ -85,8 +79,6 @@ export const ComponentPreview = (props) => {
     actions.zoomOut()
   })
 
-  const isSelected = state.component.selectedElement === "root"
-
   return (
     <Pane
       zIndex='1'
@@ -97,8 +89,9 @@ export const ComponentPreview = (props) => {
       flexDirection='column'
       justifyContent='center'
       alignItems='center'
+      // paddingLeft='50px'
     >
-      <ElementPath state={state} actions={actions} setHoveredUid={setHoveredUid} />
+      <ElementPath state={state} actions={actions} />
       <Pane
         data-uid='root'
         borderWidth='1px'
@@ -112,16 +105,18 @@ export const ComponentPreview = (props) => {
         background={state.component.previewSettings.background}
         width={state.component.previewSettings.width}
         height={state.component.previewSettings.height}
-        onClick={() => actions.selectElement("root")}
+        onClick={(event) => {
+          event.stopPropagation()
+          actions.selectElement({ uid: "root" })
+        }}
       >
         <>
-          {actions.getChildren("root").map((child) => (
+          {state.component.tree.map((element) => (
             <Element
-              key={child.uid}
+              key={element.uid}
+              element={element}
               state={state}
-              hoveredUid={hoveredUid}
               actions={actions}
-              {...child}
             />
           ))}
         </>
@@ -134,21 +129,27 @@ const ElementPath = (props) => {
   const [elementPath, setElementPath] = React.useState([])
 
   React.useEffect(() => {
-    if (props.state.selectedElement && props.state.selectedElement !== "root") {
-      setElementPath(props.actions.getElementPath(props.state.selectedElement))
+    if (
+      props.state.component.selectedUid &&
+      props.state.component.selectedUid !== "root"
+    ) {
+      setElementPath(props.actions.getElementPath(props.state.component.selectedUid))
     } else {
       setElementPath([])
     }
-  }, [props.state.selectedElement])
+  }, [props.state.component.selectedUid])
 
   return (
     <Pane display='flex' marginBottom='16px'>
       <Text
         size={500}
         marginRight='16px'
-        onMouseLeave={() => props.setHoveredUid()}
-        onMouseEnter={() => props.setHoveredUid("root")}
-        onClick={() => props.actions.selectElement("root")}
+        onMouseLeave={() => props.actions.setHoverIndicators()}
+        onMouseEnter={() => props.actions.setHoverIndicators()}
+        onClick={(event) => {
+          event.stopPropagation()
+          props.actions.selectElement({ uid: "root" })
+        }}
       >
         root
         {elementPath.length ? "  > " : ""}
@@ -158,9 +159,12 @@ const ElementPath = (props) => {
           key={pathPart.uid}
           size={500}
           marginRight='16px'
-          onMouseLeave={() => props.setHoveredUid()}
-          onMouseEnter={() => props.setHoveredUid(pathPart.uid)}
-          onClick={() => props.actions.selectElement(pathPart.uid)}
+          onMouseLeave={() => props.actions.setHoverIndicators()}
+          onMouseEnter={() => props.actions.setHoverIndicators(pathPart)}
+          onClick={(event) => {
+            event.stopPropagation()
+            props.actions.selectElement(pathPart)
+          }}
         >
           {pathPart.tag}
           {index < elementPath.length - 1 ? "  > " : ""}
@@ -171,24 +175,18 @@ const ElementPath = (props) => {
 }
 
 const Element = (props) => {
-  const children = props.actions.getChildren(props.uid)
-  const [showBorder, setShowBorder] = React.useState(false)
-  const isSelected = props.state.selectedElement === props.uid
-
-  React.useEffect(() => {
-    setTimeout(() => {
-      setShowBorder(true)
-    }, 500)
-  }, [props.uid])
+  const isSelected = props.state.component.selectedUid === props.element.uid
+  console.log({ isSelected }, props.state.component)
 
   const onClick = (event) => {
     event.preventDefault()
     event.stopPropagation()
-    props.actions.selectElement(props.uid)
+    props.actions.selectElement(props.element)
   }
 
   const Children = () => {
-    if (props.innerText) return props.innerText
+    const children = props.element.children || []
+    if (props.element.innerText) return props.element.innerText
 
     if (!children.length) {
       return children.map((child) => child)
@@ -199,36 +197,23 @@ const Element = (props) => {
         state={props.state}
         actions={props.actions}
         key={child.uid}
-        {...child}
-        hoveredUid={props.hoveredUid}
+        element={child}
         getChildren={props.getChildren}
       />
     ))
   }
 
-  const style = {
-    ...props.style,
-    outline: showBorder ? "2px dotted #d8709300" : undefined,
-  }
-
   return (
-    <props.tag
-      className={`Element ${props.hoveredUid === props.uid ? "hoverFinder" : ""}`}
-      style={style}
-      data-uid={props.uid}
+    <props.element.tag
+      className={`Element ${
+        props.state.component.hoveredElementUid === props.element.uid ? "hoverFinder" : ""
+      }`}
+      style={props.element.style}
+      data-uid={props.element.uid}
       onClick={onClick}
       data-isSelectedElement={isSelected}
     >
       <Children />
-    </props.tag>
+    </props.element.tag>
   )
-}
-
-const ComponentChildren = (props) => {
-  const currentUid = props.uid || "root"
-  const children = props.getChildren(currentUid)
-
-  return children.map((child) => (
-    <ComponentChildren style={child.style} data-uid={child.uid} data-parent-uid={child.parentUid} />
-  ))
 }

@@ -10,7 +10,7 @@
   position: absolute;
   top: 0;
   left: 0;
-  background: linear-gradient(#fffffff8, #fffffff8),
+  background: linear-gradient(#f2f2f2fa, #f2f2f2fa),
     url("https://d2gg9evh47fn9z.cloudfront.net/800px_COLOURBOX33734809.jpg");
   background-size: 15%;
   background-repeat: repeat;
@@ -62,7 +62,7 @@ svg[disabled] {
 }
 
 .hoverFinder {
-  border: 2px dotted #f19034;
+  outline: 2px dotted #f19034;
 }
 
 .Element:hover {

@@ -6,6 +6,7 @@ import { Button } from "evergreen-ui"
 import { ColorManager } from "./components/ColorManager"
 import { ComponentPreview } from "./components/ComponentPreview"
 import { Store } from "./store"
+import { ElementTree } from "./components/ElementTree"
 
 export const App = () => {
   const store = Store.useStoreState((store) => ({
@@ -34,6 +35,7 @@ export const App = () => {
     <div className='App'>
       <ColorManager />
       <ToolBar />
+      <ElementTree />
       <ComponentPreview />
     </div>
   )

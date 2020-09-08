@@ -1,12 +1,13 @@
-import { thunk, debug, action } from "easy-peasy"
+import { thunk, debug, action, computed } from "easy-peasy"
 import { nanoid } from "nanoid"
 import * as arrayUtils from "../utilities/array"
 
 // import { A_CONST } from "../consts/component";
 
 export const state = {
-  tree: {},
-  selectedElement: "root",
+  hoveredElementUid: "",
+  selectedElement: { uid: "root" },
+  selectedUid: "root",
   elements: [],
   previewSettings: {
     boxShadow: "0px 2px 24px -4px rgba(0,0,0,0.15)",
@@ -15,6 +16,25 @@ export const state = {
     height: 400,
     scale: 1,
   },
+
+  tree: computed([(state) => state.elements], (elements) => {
+    const buildTree = (targetElements) => {
+      return targetElements.map((element) => {
+        const elementChildren = arrayUtils.getChildren(elements, element.uid)
+
+        const children = elementChildren.length
+          ? buildTree(elementChildren)
+          : elementChildren
+
+        return {
+          ...element,
+          children,
+        }
+      })
+    }
+
+    return buildTree(arrayUtils.filterWhereKeyValue(elements, "parentUid", "root"))
+  }),
 }
 
 const zoomIn = action((state) => {
@@ -38,17 +58,6 @@ const setPreviewHeight = action((state, height) => {
 const setPreviewScale = action((state, scale) => {
   state.component.previewSettings.scale = scale
 })
-
-const createTextStyle = () => {
-  return {
-    color: "#000",
-    fontWeight: 700,
-  }
-}
-
-const createBoxStyle = () => {
-  return
-}
 
 const createTextElement = (tag, parentUid) => {
   return {
@@ -78,17 +87,19 @@ const createBoxElement = (parentUid) => {
 }
 
 const addElement = action((state, args) => {
-  const selectedElement = state.component.selectedElement
+  const selectedUid = state.component.selectedUid
 
-  state.component.elements.push(
+  const newElement =
     args.tag === "p"
-      ? createTextElement(args.tag, selectedElement)
-      : createBoxElement(selectedElement)
-  )
+      ? createTextElement(args.tag, selectedUid)
+      : createBoxElement(selectedUid)
+
+  console.log({ selectedUid, newElement })
+  state.component.elements.push(newElement)
 })
 
 const deleteElement = action((state, uid) => {
-  const _uid = uid || state.component.selectedElement
+  const _uid = uid || state.component.selectedUid
   state.component.elements = arrayUtils.removeById(state.component.elements, _uid)
 })
 
@@ -97,13 +108,17 @@ const copyElement = action((state, uid) => {
   state.component.elements.push({ ...element, uid: nanoid(8) })
 })
 
-const selectElement = action((state, uid) => {
-  console.log("selecting", uid)
-  state.component.selectedElement = uid
+const selectElement = action((state, element) => {
+  state.component.selectedElement = element
+  state.component.selectedUid = element.uid
 })
 
 const deselectElement = action((state) => {
-  state.component.selectedElement = null
+  state.component.selectedUid = null
+})
+
+const setHoverIndicators = action((state, element = {}) => {
+  state.component.hoveredElementUid = element.uid
 })
 
 export const actions = {
@@ -112,6 +127,7 @@ export const actions = {
   copyElement,
   selectElement,
   deselectElement,
+  setHoverIndicators,
   setPreviewWidth,
   setPreviewHeight,
   setPreviewScale,
