@@ -4,38 +4,22 @@ import * as arrayUtils from "../utilities/array"
 
 // import { A_CONST } from "../consts/component";
 
-export const state = {
-  hoveredElementUid: "",
-  selectedElement: { uid: "root" },
-  selectedUid: "root",
-  elements: [],
-  previewSettings: {
-    boxShadow: "0px 2px 24px -4px rgba(0,0,0,0.15)",
-    background: "#ffffff",
-    width: 600,
-    height: 400,
-    scale: 1,
-  },
+const tree = computed([(state) => state.elements], (elements) => {
+  const buildTree = (targetElements) => {
+    return targetElements.map((element) => {
+      const elementChildren = arrayUtils.getChildren(elements, element.uid)
 
-  tree: computed([(state) => state.elements], (elements) => {
-    const buildTree = (targetElements) => {
-      return targetElements.map((element) => {
-        const elementChildren = arrayUtils.getChildren(elements, element.uid)
+      const children = elementChildren.length ? buildTree(elementChildren) : elementChildren
 
-        const children = elementChildren.length
-          ? buildTree(elementChildren)
-          : elementChildren
+      return {
+        ...element,
+        children,
+      }
+    })
+  }
 
-        return {
-          ...element,
-          children,
-        }
-      })
-    }
-
-    return buildTree(arrayUtils.filterWhereKeyValue(elements, "parentUid", "root"))
-  }),
-}
+  return buildTree(arrayUtils.filterWhereKeyValue(elements, "parentUid", "root"))
+})
 
 const zoomIn = action((state) => {
   const next = state.component.previewSettings.scale + 0.1
@@ -90,9 +74,7 @@ const addElement = action((state, args) => {
   const selectedUid = state.component.selectedUid
 
   const newElement =
-    args.tag === "p"
-      ? createTextElement(args.tag, selectedUid)
-      : createBoxElement(selectedUid)
+    args.tag === "p" ? createTextElement(args.tag, selectedUid) : createBoxElement(selectedUid)
 
   console.log({ selectedUid, newElement })
   state.component.elements.push(newElement)
@@ -133,4 +115,21 @@ export const actions = {
   setPreviewScale,
   zoomIn,
   zoomOut,
+}
+
+export const state = {
+  hoveredElementUid: "",
+  selectedElement: { uid: "root" },
+  selectedUid: "root",
+  elements: [],
+
+  previewSettings: {
+    boxShadow: "0px 2px 24px -4px rgba(0,0,0,0.15)",
+    background: "#ffffff",
+    width: 980,
+    height: 1200,
+    scale: 1,
+  },
+
+  tree,
 }

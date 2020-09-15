@@ -81,17 +81,19 @@ export const ComponentPreview = (props) => {
 
   return (
     <Pane
+      className='ComponentPreview'
+      padding='48px'
       zIndex='1'
       width='100%'
-      height='100%'
-      position='fixed'
+      // height='100%'
+      position='relative'
       display='flex'
       flexDirection='column'
       justifyContent='center'
-      alignItems='center'
+      // alignItems='center'
       // paddingLeft='50px'
     >
-      <ElementPath state={state} actions={actions} />
+      {/* <ElementPath state={state} actions={actions} /> */}
       <Pane
         data-uid='root'
         borderWidth='1px'
@@ -112,12 +114,7 @@ export const ComponentPreview = (props) => {
       >
         <>
           {state.component.tree.map((element) => (
-            <Element
-              key={element.uid}
-              element={element}
-              state={state}
-              actions={actions}
-            />
+            <Element key={element.uid} element={element} state={state} actions={actions} />
           ))}
         </>
       </Pane>
@@ -129,10 +126,7 @@ const ElementPath = (props) => {
   const [elementPath, setElementPath] = React.useState([])
 
   React.useEffect(() => {
-    if (
-      props.state.component.selectedUid &&
-      props.state.component.selectedUid !== "root"
-    ) {
+    if (props.state.component.selectedUid && props.state.component.selectedUid !== "root") {
       setElementPath(props.actions.getElementPath(props.state.component.selectedUid))
     } else {
       setElementPath([])

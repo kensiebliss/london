@@ -1,23 +1,19 @@
-import { debug, action, createContextStore } from "easy-peasy";
-import kindOf from "kind-of";
-import * as colors from "./store/colors";
-import * as component from "./store/component";
+import { debug, action, createContextStore } from "easy-peasy"
+import kindOf from "kind-of"
+import * as colors from "./store/colors"
+import * as component from "./store/component"
 
 // Used for toggling all the different boolean
 // states held in the store.
 const toggleStateBoolean = (key) => {
   return action((state, args) => {
-    const isBoolean = kindOf(args) === "boolean";
-    const value = isBoolean ? args : !state[key];
-    state[key] = value;
-  });
-};
+    const isBoolean = kindOf(args) === "boolean"
+    const value = isBoolean ? args : !state[key]
+    state[key] = value
+  })
+}
 
 export const Store = createContextStore({
-  atoms: [],
-  molecules: [],
-  organisms: [],
-
   component: component.state,
   colors: colors.state,
   ...colors.actions,
@@ -39,4 +35,4 @@ export const Store = createContextStore({
   toggleElementManager: toggleStateBoolean("isElementManagerShown"),
   toggleAssetManager: toggleStateBoolean("isAssetManagerShown"),
   toggleFontManager: toggleStateBoolean("isFontManagerShown"),
-});
+})

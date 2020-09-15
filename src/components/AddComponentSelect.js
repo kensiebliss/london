@@ -11,7 +11,7 @@ export const AddComponentSelect = (props) => {
       selected={selected}
       onSelect={setSelected}
     >
-      <Button>ADD COMPONENT</Button>
+      <Button>Add Component</Button>
     </SelectMenu>
   )
 }
