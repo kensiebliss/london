@@ -1,56 +1,171 @@
+import { Button, Heading, Pane, TextInput } from "evergreen-ui"
+import { observer } from "mobx-react"
 import React from "react"
+import { Link, Route, Router } from "wouter"
+import { ComponentEditorView } from "./scenes/ComponentEditor/ComponentEditorView"
+import { appState } from "./state"
 import "./styles.css"
 
-import { AddComponentSelect } from "./components/AddComponentSelect"
-import { Button, Text } from "evergreen-ui"
-import { ColorManager } from "./components/ColorManager"
-import { ComponentPreview } from "./components/ComponentPreview"
-import { Store } from "./store"
-import { ElementTree } from "./components/ElementTree"
-import { AddLayoutSelect } from "./components/AddLayoutSelect"
-
 export const App = () => {
-  const store = Store.useStoreState((store) => ({
-    atoms: store.atoms,
-    component: store.component,
-  }))
-
-  const actions = Store.useStoreActions((store) => ({
-    toggleColorManager: store.toggleColorManager,
-    createColor: store.createColor,
-    addElement: store.addElement,
-  }))
-
   return (
-    <div className='App'>
-      <ColorManager />
-      <ToolBar />
-      {/* <ElementTree /> */}
-      <ComponentPreview />
-    </div>
+    <Pane
+      data-testid='App'
+      className='withCheckeredBackground'
+      width='100%'
+      height='100%'
+      position='absolute'
+      top='0px'
+      left='0px'
+    >
+      <Routing />
+    </Pane>
   )
 }
 
-const ToolBar = () => {
-  const state = Store.useStoreState((state) => ({
-    scale: state.component.previewSettings.scale,
-  }))
-
-  const actions = Store.useStoreActions((store) => ({
-    toggleColorManager: store.toggleColorManager,
-    createColor: store.createColor,
-    addElement: store.addElement,
-  }))
-
+const Routing = (props) => {
   return (
-    <div className='toolbar'>
-      <Button onClick={() => actions.addElement({ tag: "div" })}>Add Box</Button>
-      <Button onClick={() => actions.addElement({ tag: "p" })}>Add Heading</Button>
-      <Button onClick={() => actions.addElement({ tag: "div" })}>Add Section</Button>
-      <AddComponentSelect />
-      <AddLayoutSelect />
-      <Button onClick={actions.toggleColorManager}>Colors</Button>
-      <Text size={400}>Zoom: {Number.parseFloat(state.scale * 100).toFixed(0)}%</Text>
-    </div>
+    <Router>
+      <Route path='/' component={DashboardView} />
+      <Route path='/projects/:projectUid' component={ProjectView} />
+      <Route path='/projects/:projectUid/component/:componentUid' component={ComponentEditorView} />
+    </Router>
   )
 }
+
+const NonEditorView = (props) => {
+  return (
+    <Pane data-testid={props.testId} background='#fff' width='100%' height='100%'>
+      <Pane maxWidth='980px' marginX='auto' paddingX='24px' paddingY='48px'>
+        {props.children}
+      </Pane>
+    </Pane>
+  )
+}
+
+const ProjectView = observer((props) => {
+  appState.setActiveProject(props.params.projectUid)
+
+  return (
+    <NonEditorView testid='ProjectView' background='#fff' width='100%' height='100%'>
+      <Pane display='flex' justifyContent='space-between'>
+        <Heading size={900}>Project: {appState.activeProject.title}</Heading>
+      </Pane>
+
+      <Pane padding='24px' display='flex' flexDirection='column'>
+        <Pane display='flex' justifyContent='space-between'>
+          <Heading size={700}>Components</Heading>
+          <CreateComponentPane />
+        </Pane>
+
+        {appState.activeProject.components.map((component) => (
+          <ComponentCard
+            key={component.uid}
+            projectUid={props.params.projectUid}
+            component={component}
+          />
+        ))}
+      </Pane>
+    </NonEditorView>
+  )
+})
+
+const DashboardView = observer((props) => {
+  return (
+    <NonEditorView testid='DashboardView' background='#fff' width='100%' height='100%'>
+      <Pane display='flex' justifyContent='space-between'>
+        <Heading size={900}>Dashboard</Heading>
+      </Pane>
+
+      <Pane padding='24px' display='flex' flexDirection='column'>
+        <Pane display='flex' justifyContent='space-between'>
+          <Heading size={700}>Projects</Heading>
+          <CreateProjectPane />
+        </Pane>
+
+        {appState.projects.map((project) => (
+          <ProjectCard key={project.uid} project={project} />
+        ))}
+      </Pane>
+    </NonEditorView>
+  )
+})
+
+const CreateProjectPane = observer((props) => {
+  const [inputValue, setInputValue] = React.useState("")
+
+  const create = () => {
+    appState.createAndAddProject({ title: inputValue })
+    setInputValue("")
+  }
+
+  return (
+    <Pane display='flex' alignItems='center'>
+      <TextInput
+        value={inputValue}
+        marginRight='16px'
+        onChange={(event) => setInputValue(event.target.value)}
+        placeholder='New Project Title'
+      />
+      <Button onClick={create}>Create a Project</Button>
+    </Pane>
+  )
+})
+
+const CreateComponentPane = observer((props) => {
+  const [inputValue, setInputValue] = React.useState("")
+
+  const create = () => {
+    appState.activeProject.createAndAddComponent({ title: inputValue })
+    setInputValue("")
+  }
+
+  return (
+    <Pane display='flex' alignItems='center'>
+      <TextInput
+        marginRight='8px'
+        value={inputValue}
+        onChange={(event) => setInputValue(event.target.value)}
+        placeholder='New Component Title'
+      />
+      <Button onClick={create}>Create Component</Button>
+    </Pane>
+  )
+})
+
+const ProjectCard = observer((props) => {
+  const linkHref = `/projects/${props.project.uid}`
+
+  return (
+    <Link href={linkHref}>
+      <Pane
+        padding='16px'
+        borderRadius='2px'
+        borderWidth='1px'
+        borderStyle='solid'
+        borderColor='#E4E7EB'
+        marginTop='16px'
+      >
+        <Heading size={500}>{props.project.title}</Heading>
+      </Pane>
+    </Link>
+  )
+})
+
+const ComponentCard = observer((props) => {
+  const linkHref = `/projects/${props.projectUid}/component/${props.component.uid}`
+
+  return (
+    <Link href={linkHref}>
+      <Pane
+        padding='16px'
+        borderRadius='2px'
+        borderWidth='1px'
+        borderStyle='solid'
+        borderColor='#E4E7EB'
+        marginTop='16px'
+      >
+        <Heading size={500}>{props.component.title}</Heading>
+      </Pane>
+    </Link>
+  )
+})

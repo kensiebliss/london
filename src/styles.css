@@ -4,19 +4,7 @@
   margin: 0;
 }
 
-.App {
-  height: 100%;
-  width: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-  /* background: linear-gradient(#f2f2f2fa, #f2f2f2fa),
-    url("https://d2gg9evh47fn9z.cloudfront.net/800px_COLOURBOX33734809.jpg"); */
-  background-size: 15%;
-  background-repeat: repeat;
-}
-
-.ComponentPreview {
+.withCheckeredBackground {
   background: linear-gradient(#f2f2f2fa, #f2f2f2fa),
     url("https://d2gg9evh47fn9z.cloudfront.net/800px_COLOURBOX33734809.jpg");
   background-size: 15%;
@@ -71,14 +59,30 @@ svg[disabled] {
 }
 
 .Element {
-  outline: 2px dotted transparent;
-  transition: outline 0.5s ease-out;
+  outline: 4px dotted transparent;
+  transition: outline 0.25s ease-out;
 }
 
 .hoverFinder {
   outline: 2px dotted #f19034;
 }
-
+/* 
 .Element:hover {
   outline: 1px dotted palevioletred !important;
+} */
+
+.Element:hover {
+  outline: 4px dotted deeppink;
+}
+
+.Element.isSelectedElement {
+  outline: 4px dotted dodgerblue;
+}
+
+.Element.isSelectedElement:hover {
+  outline: 4px dotted darkorchid;
+}
+
+.boxShadowX {
+  box-shadow: rgba(67, 90, 111, 0.3) 0px 0px 1px, rgba(67, 90, 111, 0.47) 0px 16px 24px -8px;
 }
