@@ -1,9 +1,10 @@
-import { types, getSnapshot } from "mobx-state-tree"
+import { types } from "mobx-state-tree"
 import { Project } from "./Project"
-
-import { nameType, uidType, optionalArrayType, optionalReferenceType } from "./utilities"
+import { optionalArrayType, optionalReferenceType } from "./utilities/customTypes"
+import getValue from "get-value"
 
 const model = {
+  name: "State",
   projects: optionalArrayType(Project),
   activeProject: optionalReferenceType(Project),
 }
@@ -30,6 +31,10 @@ const views = (self) => {
   return {
     get projectCount() {
       return self.projects.length
+    },
+
+    get activeComponent() {
+      return getValue(self.activeProject, "activeComponent")
     },
   }
 }

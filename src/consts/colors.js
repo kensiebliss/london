@@ -1,5 +1,3 @@
-import { nanoid } from "nanoid"
-
 export const DEFAULT_NEUTRAL_COLORS = [
   { title: "lightest", hex: "#F9F9FB" },
   { title: "light", hex: "#E4E7EB" },

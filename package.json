@@ -9,6 +9,7 @@
     "array-move": "^3.0.1",
     "classcat": "^4.1.0",
     "color-name-list": "^6.13.0",
+    "dayjs": "^1.8.35",
     "easy-peasy": "3.3.1",
     "evergreen-ui": "5.0.6",
     "find-replace": "^4.0.1",

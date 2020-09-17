@@ -1,12 +1,10 @@
-import React from "react"
-import "./styles.css"
-
-import { Button, Heading, Pane, TextInput, TextInputField } from "evergreen-ui"
-import { Router, Route, Link } from "wouter"
+import { Button, Heading, Pane, TextInput } from "evergreen-ui"
 import { observer } from "mobx-react"
+import React from "react"
+import { Link, Route, Router } from "wouter"
+import { ComponentEditorView } from "./scenes/ComponentEditor/ComponentEditorView"
 import { appState } from "./state"
-
-import { ComponentEditorView } from "./components/views/ComponentEditorView"
+import "./styles.css"
 
 export const App = () => {
   return (
@@ -45,6 +43,8 @@ const NonEditorView = (props) => {
 }
 
 const ProjectView = observer((props) => {
+  appState.setActiveProject(props.params.projectUid)
+
   return (
     <NonEditorView testid='ProjectView' background='#fff' width='100%' height='100%'>
       <Pane display='flex' justifyContent='space-between'>
@@ -135,12 +135,8 @@ const CreateComponentPane = observer((props) => {
 const ProjectCard = observer((props) => {
   const linkHref = `/projects/${props.project.uid}`
 
-  const setActiveProject = () => {
-    appState.setActiveProject(props.project.uid)
-  }
-
   return (
-    <Link href={linkHref} onClick={setActiveProject}>
+    <Link href={linkHref}>
       <Pane
         padding='16px'
         borderRadius='2px'
@@ -158,12 +154,8 @@ const ProjectCard = observer((props) => {
 const ComponentCard = observer((props) => {
   const linkHref = `/projects/${props.projectUid}/component/${props.component.uid}`
 
-  const setActiveComponent = () => {
-    appState.activeProject.setActiveComponent(props.component.uid)
-  }
-
   return (
-    <Link href={linkHref} onClick={setActiveComponent}>
+    <Link href={linkHref}>
       <Pane
         padding='16px'
         borderRadius='2px'

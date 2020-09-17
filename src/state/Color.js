@@ -1,7 +1,5 @@
-import { types, getSnapshot } from "mobx-state-tree"
-import { nanoid } from "nanoid"
-
-import { nameType, uidType, optionalArrayType, optionalReferenceType } from "./utilities"
+import { types } from "mobx-state-tree"
+import { uidType } from "./utilities/customTypes"
 
 const model = {
   uid: uidType("color"),

@@ -1,7 +1,6 @@
-import { types, getSnapshot } from "mobx-state-tree"
-
+import { types } from "mobx-state-tree"
 import { Style } from "./Style"
-import { nameType, uidType, optionalArrayType, optionalReferenceType } from "./utilities"
+import { nameType, uidType } from "./utilities/customTypes"
 
 const model = {
   tag: types.string,
@@ -9,6 +8,7 @@ const model = {
   title: nameType("Element"),
   parentUid: types.optional(types.string, () => "__root"),
   style: types.optional(Style, () => Style.create({})),
+  innerText: types.optional(types.string, ""),
   children: types.optional(types.array(types.late(() => Element)), []),
 }
 

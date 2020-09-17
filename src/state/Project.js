@@ -1,15 +1,14 @@
-import { types, getSnapshot } from "mobx-state-tree"
-
-import { Component } from "./Component"
+import { types } from "mobx-state-tree"
 import { Colors } from "./Colors"
+import { Component } from "./Component"
 
 import {
-  nameType,
-  uidType,
-  optionalArrayType,
   createInPlaceType,
+  nameType,
+  optionalArrayType,
   optionalReferenceType,
-} from "./utilities"
+  uidType,
+} from "./utilities/customTypes"
 
 const model = {
   uid: uidType("project"),

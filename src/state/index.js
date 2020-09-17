@@ -1,17 +1,11 @@
-import { autorun } from "mobx"
-import { getSnapshot } from "mobx-state-tree"
-import localForage from "localforage"
-import { persist } from "mst-persist"
-
-import { State } from "./State"
-import { Project } from "./Project"
+import { Color } from "./Color"
+import { Colors } from "./Colors"
 import { Component } from "./Component"
 import { Element } from "./Element"
-import { Colors } from "./Colors"
-import { Color } from "./Color"
+import { Project } from "./Project"
+import { State } from "./State"
 import { Style } from "./Style"
-
-export const appState = State.create()
+import { actionLoggerMiddleware } from "./utilities/actionLoggerMiddleware"
 
 export const Models = {
   State,
@@ -22,3 +16,26 @@ export const Models = {
   Color,
   Style,
 }
+
+const createDevAppState = () => {
+  const appState = State.create({
+    projects: [
+      Project.create({
+        uid: "project12345678",
+        components: [
+          Component.create({
+            uid: "component12345678",
+            type: "component",
+          }),
+        ],
+      }),
+    ],
+  })
+
+  actionLoggerMiddleware(appState)
+
+  return appState
+}
+
+export const appState =
+  process.env.NODE_ENV === "development" ? createDevAppState() : State.create()

@@ -1,14 +1,13 @@
-import { types, getSnapshot } from "mobx-state-tree"
+import { createRowElement, createTextElement } from "./utilities/createElement"
 
+import { types } from "mobx-state-tree"
 import { Element } from "./Element"
-
 import {
   nameType,
-  uidType,
   optionalArrayType,
-  createInPlaceType,
   optionalReferenceType,
-} from "./utilities"
+  uidType,
+} from "./utilities/customTypes"
 
 const model = {
   type: types.optional(types.string, "component"),
@@ -17,6 +16,7 @@ const model = {
   elements: optionalArrayType(Element),
   selectedElement: optionalReferenceType(Element),
   zoom: types.optional(types.number, 1.0),
+  rootElement: optionalReferenceType(Element),
 }
 
 const actions = (self) => {
@@ -24,7 +24,7 @@ const actions = (self) => {
   const createElement = (data) => Element.create(data)
   const addElement = (element) => self.elements.push(element)
   const setSelectedElement = (element) => (self.selectedElement = element)
-  const deselectElement = () => (self.selectedElement = null)
+  const deselectElement = () => (self.selectedElement = self.elements[0])
   const zoomIn = () => (self.zoom = Number(Number.parseFloat(self.zoom + 0.1).toFixed(1)))
   const zoomOut = () => (self.zoom = Number(Number.parseFloat(self.zoom - 0.1).toFixed(1)))
 
@@ -39,11 +39,16 @@ const actions = (self) => {
       tag: "div",
     })
 
+    rootElement.style.setStyle("width", "200px")
+    rootElement.style.setStyle("height", "100px")
+    self.rootElement = rootElement
     self.elements.push(rootElement)
     self.setSelectedElement(rootElement)
   }
 
   return {
+    createRowElement,
+    createTextElement,
     setTitle,
     createElement,
     addElement,
@@ -60,4 +65,12 @@ const actions = (self) => {
   }
 }
 
-export const Component = types.model(model).actions(actions)
+const views = (self) => {
+  return {
+    get isRootElementSelected() {
+      return self.selectedElement.uid === self.rootElement.uid
+    },
+  }
+}
+
+export const Component = types.model(model).actions(actions).views(views)
